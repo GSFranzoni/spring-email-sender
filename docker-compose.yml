@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  database:
+    container_name: database
+    image: 'mysql/mysql-server:8.0'
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'spring'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'spring-database:/var/lib/mysql'
+    networks:
+      - spring-cloud-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+  mailhog:
+    container_name: mailhog
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - spring-cloud-network
+networks:
+  spring-cloud-network:
+    driver: bridge
+volumes:
+  spring-database:
+    driver: local
